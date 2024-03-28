@@ -7,8 +7,9 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const router = require('./src/routes');
+
 const envConfig = require('./src/config');
-require('./src/db/config/sequelize');
+// require('./src/db/config/sequelize');
 
 // Declarations
 const PORT = envConfig.PORT || 8080;

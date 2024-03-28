@@ -21,6 +21,7 @@ const authController = {
           email,
         },
       });
+      console.log(user);
       if (!user) {
         return res.status(404).json({ msg: 'Email not found' });
       }

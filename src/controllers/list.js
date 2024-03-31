@@ -21,6 +21,38 @@ const listController = {
       return res.status(500).json({ msg: 'Internal Server Error' });
     }
   },
+  showList: async (req, res) => {
+    try {
+      const user = res.locals.user;
+      const listId = req.params.id;
+
+      // checking information valid or not
+      if (!listId) return res.status(400).json({ msg: 'Missing field list id' });
+
+      const list = await List.findOne({
+        where: {
+          id: listId,
+        },
+      });
+      if (!list || list.UserId !== user.id) {
+        return res.status(400).json({ msg: "There isn't a list with this id" });
+      }
+      const listItems = await ListItem.findAll({
+        where: {
+          ListId: listId,
+        },
+      });
+
+      if (listItems.length > 0) {
+        return res.status(200).json({ items: listItems });
+      } else {
+        return res.status(200).json({ msg: 'Your List is empty.' });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ msg: 'Internal Server Error' });
+    }
+  },
   // add to list
   addToList: async (req, res) => {
     try {

@@ -43,7 +43,7 @@ const authController = {
     } catch (error) {
       console.log(error);
       return res.status(500).json({
-        msg: 'Sign in Error',
+        msg: 'Internal Server Error',
       });
     }
   },

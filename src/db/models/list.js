@@ -12,12 +12,10 @@ const ListItem = sequelize.define('ListItem', {
   item: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
   },
 });
 

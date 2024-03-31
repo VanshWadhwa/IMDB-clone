@@ -8,7 +8,9 @@
     "lint": "npx eslint .",
     "lint:fix": "eslint --fix .",
     "test": "jest",
-    "prepare": "husky"
+    "prepare": "husky",
+    "migrate": "npx sequelize-cli db:migrate",
+    "migrate:undo":"npx sequelize-cli db:migrate:undo"
   },
   "keywords": [],
   "author": "",

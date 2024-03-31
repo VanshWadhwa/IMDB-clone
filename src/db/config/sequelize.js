@@ -21,7 +21,7 @@ async function checkDbConnection() {
     console.error('Unable to connect to the database:', error);
   }
 }
-sequelize.sync();
+// sequelize.sync();
 
 checkDbConnection();
 

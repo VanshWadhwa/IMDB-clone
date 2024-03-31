@@ -10,6 +10,7 @@ const authMiddleware = async (req, res, next) => {
       req.isAuth = false;
       return res.status(400).json({ msg: 'No Authorization' });
     }
+    console.log('Token found');
     if (token) {
       jwt.verify(token, config.JWT_SECRET, async (err, decodedToken) => {
         if (err) {
@@ -17,6 +18,7 @@ const authMiddleware = async (req, res, next) => {
             msg: 'Invalid Authorization',
           });
         } else {
+          console.log('Finding user');
           const user = await User.findOne({
             where: {
               id: decodedToken.id,
@@ -26,6 +28,12 @@ const authMiddleware = async (req, res, next) => {
             },
             raw: true,
           });
+
+          if (!user) {
+            return res.status(401).json({
+              msg: 'Invalid Authorization',
+            });
+          }
           res.locals.user = user;
 
           next();
@@ -34,7 +42,8 @@ const authMiddleware = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(200).json();
+    console.log('Middleware error');
+    // res.status(200).json();
   }
 };
 

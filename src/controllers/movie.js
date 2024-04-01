@@ -18,7 +18,7 @@ const movieController = {
         },
       };
 
-      const reviews = await Review.findOne({
+      const reviews = await Review.findAll({
         where: {
           contentId: id,
         },

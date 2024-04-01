@@ -30,3 +30,5 @@ app.use('/', router);
 
 // Listening to app
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
+
+module.exports = app;

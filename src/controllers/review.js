@@ -5,7 +5,8 @@ const reviewController = {
   createReview: async (req, res) => {
     try {
       const user = res.locals.user;
-      const { data, contentId } = req.body;
+      const { data } = req.body;
+      const { contentId } = req.params;
 
       if (!contentId || !data)
         return res.status(400).json({ msg: 'Missing field (data or contentId)' });

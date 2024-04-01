@@ -18,5 +18,5 @@ module.exports = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_REFRESH_EXPIRATION: process.env.JWT_REFRESH_EXPIRATION,
   TMDB_TOKEN: process.env.TMDB_TOKEN,
-  TMDB_URL: 'https://api.themoviedb.org/3/',
+  TMDB_URL: process.env.TMDB_URL,
 };

@@ -3,31 +3,25 @@ const User = require('../db/models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// const handleErrors = (err) => {
-//   let error = {email}
-// }
-
 const authController = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
 
-      console.log(email, password);
-
-      if (!email || !password) return res.status(400).json({ msg: 'Incomplete data' });
-
+      if (!email || !password) {
+        return res.status(400).json({ msg: 'Incomplete data' });
+      }
       const user = await User.findOne({
         where: {
           email,
         },
       });
-      console.log(user);
       if (!user) {
-        return res.status(404).json({ msg: 'Email not found' });
+        return res.status(400).json({ msg: 'Incorrect email or password' });
       }
       const passwordValid = await bcrypt.compare(password, user.password);
       if (!passwordValid) {
-        return res.status(404).json({ msg: 'Incorrect email or password' });
+        return res.status(400).json({ msg: 'Incorrect email or password' });
       }
 
       const token = jwt.sign({ id: user.id }, config.JWT_SECRET, {
@@ -51,10 +45,9 @@ const authController = {
     try {
       const { username, email, password } = req.body;
 
-      console.log(username, email, password);
-
-      if (!email || !password || !username) return res.status(400).json({ msg: 'Incomplete data' });
-
+      if (!email || !password || !username) {
+        return res.status(400).json({ msg: 'Incomplete data' });
+      }
       const userExists = await User.findOne({
         where: { email },
       });

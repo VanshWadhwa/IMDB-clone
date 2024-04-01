@@ -1,4 +1,5 @@
-const { List, ListItem } = require('../db/models/list');
+const List = require('../db/models/list');
+const ListItem = require('../db/models/list_item');
 
 const listController = {
   // view list
@@ -11,11 +12,7 @@ const listController = {
           UserId: user.id,
         },
       });
-      if (lists) {
-        return res.status(200).json({ lists: lists });
-      } else {
-        return res.status(400).json({ msg: "You don't have any list with this account." });
-      }
+      return res.status(200).json({ lists: lists });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: 'Internal Server Error' });
@@ -27,14 +24,16 @@ const listController = {
       const listId = req.params.id;
 
       // checking information valid or not
-      if (!listId) return res.status(400).json({ msg: 'Missing field list id' });
-
+      if (!listId) {
+        return res.status(400).json({ msg: 'Missing field list id' });
+      }
       const list = await List.findOne({
         where: {
           id: listId,
+          UserId: user.id,
         },
       });
-      if (!list || list.UserId !== user.id) {
+      if (!list) {
         return res.status(400).json({ msg: "There isn't a list with this id" });
       }
       const listItems = await ListItem.findAll({
@@ -43,11 +42,7 @@ const listController = {
         },
       });
 
-      if (listItems.length > 0) {
-        return res.status(200).json({ items: listItems });
-      } else {
-        return res.status(200).json({ msg: 'Your List is empty.' });
-      }
+      return res.status(200).json({ items: listItems });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: 'Internal Server Error' });
@@ -104,8 +99,9 @@ const listController = {
       const { name } = req.body;
 
       //   Checking list name
-      if (!name) return res.status(400).json({ msg: 'Please provide a list name' });
-
+      if (!name) {
+        return res.status(400).json({ msg: 'Please provide a list name' });
+      }
       const checkList = await List.findOne({
         where: {
           name: name,
@@ -113,8 +109,9 @@ const listController = {
         },
       });
       //   check if the list exists
-      if (checkList) return res.status(400).json({ msg: 'You already have a list with this name' });
-
+      if (checkList) {
+        return res.status(400).json({ msg: 'You already have a list with this name' });
+      }
       const list = await List.create({ name, UserId: user.id });
 
       return res.status(200).json({ list: list });
@@ -128,16 +125,19 @@ const listController = {
   deleteList: async (req, res) => {
     try {
       const user = res.locals.user;
-      console.log('user.id');
-      console.log(user.id);
       const { listId } = req.body;
       const list = await List.findOne({
         where: {
           id: listId,
         },
       });
-      if (!list)
+
+      if (!list) {
         return res.status(400).json({ msg: 'No such list already exist with this listId' });
+      }
+      if (list.UserId != user.id) {
+        return res.status(400).json({ msg: 'Unauthorized operation' });
+      }
 
       // deleting list items first
 

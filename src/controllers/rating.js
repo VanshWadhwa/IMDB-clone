@@ -1,11 +1,14 @@
-const { UserRating, ContentRating } = require('../db/models/rating');
+const ContentRating = require('../db/models/content_rating');
+const UserRating = require('../db/models/user_rating');
 
 const ratingController = {
   // create review
   createRating: async (req, res) => {
     try {
       const user = res.locals.user;
-      const { rating, contentId } = req.body;
+      const { rating } = req.body;
+
+      const { contentId } = req.params;
 
       if (!contentId || rating === null)
         return res.status(400).json({ msg: 'Missing field (rating or  contentId)' });
@@ -17,8 +20,9 @@ const ratingController = {
         },
       });
 
-      if (userRatingCheck)
+      if (userRatingCheck) {
         return res.status(400).json({ msg: 'Rating already submitted for this.' });
+      }
 
       await UserRating.create({ rating, contentId, UserId: user.id });
 
@@ -38,8 +42,6 @@ const ratingController = {
           totalRating: contentRating.totalRating + rating,
         });
       } else {
-        console.log('totalRatings');
-        console.log(rating);
         await ContentRating.create({
           contentId: contentId,
           rating: rating,

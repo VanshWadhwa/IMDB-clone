@@ -10,40 +10,38 @@ const authMiddleware = async (req, res, next) => {
       req.isAuth = false;
       return res.status(400).json({ msg: 'No Authorization' });
     }
-    console.log('Token found');
-    if (token) {
-      jwt.verify(token, config.JWT_SECRET, async (err, decodedToken) => {
-        if (err) {
-          return res.status(401).json({
-            msg: 'Invalid Authorization',
-          });
-        } else {
-          console.log('Finding user');
-          const user = await User.findOne({
-            where: {
-              id: decodedToken.id,
-            },
-            attributes: {
-              exclude: ['password', 'createdAt', 'updatedAt'],
-            },
-            raw: true,
-          });
+    jwt.verify(token, config.JWT_SECRET, async (err, decodedToken) => {
+      if (err) {
+        return res.status(401).json({
+          msg: 'Invalid Authorization',
+        });
+      }
 
-          if (!user) {
-            return res.status(401).json({
-              msg: 'Invalid Authorization',
-            });
-          }
-          res.locals.user = user;
-
-          next();
-        }
+      const user = await User.findOne({
+        where: {
+          id: decodedToken.id,
+        },
+        attributes: {
+          exclude: ['password', 'createdAt', 'updatedAt'],
+        },
+        raw: true,
       });
-    }
+
+      if (!user) {
+        return res.status(401).json({
+          msg: 'Invalid Authorization',
+        });
+      }
+      res.locals.user = user;
+
+      next();
+    });
   } catch (error) {
     console.log(error);
-    console.log('Middleware error');
-    // res.status(200).json();
+
+    return res.status(500).json({
+      msg: 'Internal Server Error',
+    });
   }
 };
 

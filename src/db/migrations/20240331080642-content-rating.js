@@ -2,30 +2,41 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Reviews', {
+    await queryInterface.createTable('ContentRatings', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      data: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
       contentId: {
         allowNull: false,
         type: Sequelize.STRING,
+        unique: true,
       },
-      UserId: {
-        type: Sequelize.INTEGER,
+      rating: {
+        type: Sequelize.FLOAT,
         allowNull: false,
-
-        references: {
-          model: 'Users',
-          key: 'id',
+        validate: {
+          max: {
+            args: [10.0],
+            msg: 'Your rating should be less than or equal to 10',
+          },
+          min: {
+            args: [0.0],
+            msg: 'Your rating should be greater than or equal to 0',
+          },
         },
       },
+      noOfRating: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      totalRating: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -38,6 +49,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('Reviews');
+    await queryInterface.dropTable('ContentRatings');
   },
 };

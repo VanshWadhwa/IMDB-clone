@@ -8,23 +8,9 @@ const List = sequelize.define('List', {
     allowNull: false,
   },
 });
-const ListItem = sequelize.define('ListItem', {
-  item: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
 
 // User to list one-to-many relationship
 User.hasMany(List);
 List.belongsTo(User);
 
-// ListItem to list many-to-one relationship
-List.hasMany(ListItem);
-ListItem.belongsTo(List);
-
-module.exports = { List, ListItem };
+module.exports = List;

@@ -21,8 +21,8 @@ async function checkDbConnection() {
     console.error('Unable to connect to the database:', error);
   }
 }
-// sequelize.sync();
-
-checkDbConnection();
+if (envConfig.NODE_ENV !== 'test') {
+  checkDbConnection();
+}
 
 module.exports = sequelize;

@@ -21,7 +21,7 @@ const movieController = {
         },
       });
 
-      getTMDBData(`movie/${id}?language=en-US`)
+      await getTMDBData(`movie/${id}?language=en-US`)
         .then(function (response) {
           if (reviews) {
             response.data['reviews'] = reviews;
@@ -52,7 +52,7 @@ const movieController = {
   },
   trending: async (req, res) => {
     try {
-      getTMDBData(`trending/all/day?language=en-U`)
+      await getTMDBData(`trending/all/day?language=en-U`)
         .then(function (response) {
           return res.status(200).json({ data: response.data });
         })
@@ -76,7 +76,7 @@ const movieController = {
         `discover/movie?language=en-U&` +
         new URLSearchParams({ year, with_genres, page }).toString();
 
-      getTMDBData(URL)
+      await getTMDBData(URL)
         .then(function (response) {
           return res.status(200).json({ data: response.data });
         })

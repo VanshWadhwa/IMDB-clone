@@ -5,7 +5,7 @@
  */
 
 const express = require('express');
-const router = require('./src/routes');
+const routes = require('./src/routes');
 
 const envConfig = require('./src/config');
 
@@ -23,7 +23,7 @@ app.use('/health', (req, res) => {
     status: 'SUCCESS',
   });
 });
-app.use('/', router);
+app.use('/', routes);
 
 // Listening to app
 if (envConfig.NODE_ENV !== 'test') {

@@ -24,4 +24,8 @@ module.exports = {
       total_rating: totalRating,
     });
   },
+
+  update: async (contentRating, rating, no_of_rating, total_rating) => {
+    return await contentRating.update({ rating, no_of_rating, total_rating });
+  },
 };

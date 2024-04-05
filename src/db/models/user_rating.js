@@ -25,9 +25,7 @@ module.exports = modelWithId('user_rating', {
   },
 });
 
-// // User Rating belongs to user
-// User.hasMany(UserRating);
-// UserRating.belongsTo(User);
+
 
 module.exports.associate = function associations(models) {
   const { user, user_rating } = models;

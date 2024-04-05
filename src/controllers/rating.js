@@ -21,19 +21,17 @@ const ratingController = {
 
       await UserRating.create(rating, contentId, user.user_id);
 
-      // UserRating.create({ rating, contentId, user_id: user.user_id });
-
       const contentRating = await ContentRating.findByContentId(contentId);
 
       if (contentRating) {
         const prevNoOfRating = contentRating.no_of_rating;
         const newRating = (contentRating.total_rating + rating) / (prevNoOfRating + 1);
-
-        await contentRating.update({
-          rating: newRating,
-          no_of_rating: prevNoOfRating + 1,
-          total_rating: contentRating.total_rating + rating,
-        });
+        await ContentRating.update(
+          contentRating,
+          newRating,
+          prevNoOfRating + 1,
+          contentRating.total_rating + rating
+        );
       } else {
         await ContentRating.create(contentId, rating, 1, rating);
       }

@@ -1,10 +1,11 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./../config/sequelize');
-const User = require('./user');
+
+// const User = require('./user');
+const { modelWithId } = require('../schemas');
 
 // done by the user
-const UserRating = sequelize.define('UserRating', {
-  contentId: {
+module.exports = modelWithId('user_rating', {
+  content_id: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -24,8 +25,18 @@ const UserRating = sequelize.define('UserRating', {
   },
 });
 
-// User Rating belongs to user
-User.hasMany(UserRating);
-UserRating.belongsTo(User);
+// // User Rating belongs to user
+// User.hasMany(UserRating);
+// UserRating.belongsTo(User);
 
-module.exports = UserRating;
+module.exports.associate = function associations(models) {
+  const { user, user_rating } = models;
+  user.hasMany(user_rating, {
+    foreignKey: 'user_id',
+    as: 'user_rating',
+  });
+  user_rating.belongsTo(user, {
+    foreignKey: 'user_id',
+    as: 'user',
+  });
+};

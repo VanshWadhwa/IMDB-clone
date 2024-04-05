@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./../config/sequelize');
-const User = require('./user');
 
-const List = sequelize.define('List', {
+const { modelWithId } = require('../schemas');
+
+module.exports = modelWithId('list', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -10,7 +10,15 @@ const List = sequelize.define('List', {
 });
 
 // User to list one-to-many relationship
-User.hasMany(List);
-List.belongsTo(User);
 
-module.exports = List;
+module.exports.associate = function associations(models) {
+  const { user, list } = models;
+  user.hasMany(list, {
+    foreignKey: 'user_id',
+    as: 'list',
+  });
+  list.belongsTo(user, {
+    foreignKey: 'user_id',
+    as: 'user',
+  });
+};

@@ -1,38 +1,29 @@
 'use strict';
 
+const { migrationCreateTableWithId } = require('../schemas');
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Lists', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      name: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      UserId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Users',
-          key: 'id',
+    await queryInterface.createTable(
+      'list',
+      migrationCreateTableWithId('list', {
+        name: {
+          allowNull: false,
+          type: Sequelize.STRING,
         },
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-    });
+        user_id: {
+          type: Sequelize.UUID,
+          allowNull: false,
+          references: {
+            model: 'user',
+            key: 'user_id',
+          },
+        },
+      })
+    );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('Lists');
+    await queryInterface.dropTable('list');
   },
 };

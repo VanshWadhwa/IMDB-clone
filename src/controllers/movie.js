@@ -1,5 +1,5 @@
-const ContentRating = require('../db/models/content_rating');
-const Review = require('../db/models/review');
+const Review = require('./../db/helper/review');
+const ContentRating = require('./../db/helper/content_rating');
 const getTMDBData = require('../utils/tmdb');
 
 const movieController = {
@@ -10,16 +10,8 @@ const movieController = {
         return res.status(400).json({ msg: 'No ID provided' });
       }
 
-      const reviews = await Review.findAll({
-        where: {
-          contentId: id,
-        },
-      });
-      const ratings = await ContentRating.findOne({
-        where: {
-          contentId: id,
-        },
-      });
+      const reviews = await Review.findAllById(id);
+      const ratings = await ContentRating.findByContentId(id);
 
       await getTMDBData(`movie/${id}?language=en-US`)
         .then(function (response) {
@@ -31,20 +23,12 @@ const movieController = {
           }
           return res.status(200).json({ data: response.data });
         })
-        .catch((error) => {
-          if (error.response.status == 404) {
-            return res.status(500).json({
-              msg: 'Invalid ID',
-            });
-          }
-
-          console.log(error);
+        .catch(() => {
           return res.status(500).json({
             msg: 'Invalid details or Try again later',
           });
         });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         msg: 'Internal Server Error',
       });
@@ -56,14 +40,12 @@ const movieController = {
         .then(function (response) {
           return res.status(200).json({ data: response.data });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
           return res.status(500).json({
             msg: 'Invalid details or Try again later',
           });
         });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         msg: 'Internal Server Error',
       });
@@ -80,14 +62,12 @@ const movieController = {
         .then(function (response) {
           return res.status(200).json({ data: response.data });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
           return res.status(500).json({
             msg: 'Invalid details or Try again later',
           });
         });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({
         msg: 'Internal Server Error',
       });

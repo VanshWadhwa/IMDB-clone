@@ -1,9 +1,10 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./../config/sequelize');
+
+const { modelWithId } = require('../schemas');
 
 // content rating, for the content
-const ContentRating = sequelize.define('ContentRating', {
-  contentId: {
+module.exports = modelWithId('content_rating', {
+  content_id: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
@@ -22,14 +23,12 @@ const ContentRating = sequelize.define('ContentRating', {
       },
     },
   },
-  noOfRating: {
+  no_of_rating: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  totalRating: {
+  total_rating: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
 });
-
-module.exports = ContentRating;

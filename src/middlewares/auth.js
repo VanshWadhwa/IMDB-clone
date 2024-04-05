@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+
 const config = require('../config');
-const User = require('../db/models/user');
+const User = require('./../db/helper/user');
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -17,15 +18,7 @@ const authMiddleware = async (req, res, next) => {
         });
       }
 
-      const user = await User.findOne({
-        where: {
-          id: decodedToken.id,
-        },
-        attributes: {
-          exclude: ['password', 'createdAt', 'updatedAt'],
-        },
-        raw: true,
-      });
+      const user = await User.findById(decodedToken.id);
 
       if (!user) {
         return res.status(401).json({
@@ -37,8 +30,6 @@ const authMiddleware = async (req, res, next) => {
       next();
     });
   } catch (error) {
-    console.log(error);
-
     return res.status(500).json({
       msg: 'Internal Server Error',
     });

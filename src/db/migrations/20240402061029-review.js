@@ -1,43 +1,34 @@
 'use strict';
 
+const { migrationCreateTableWithId } = require('../schemas');
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Reviews', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
-      },
-      data: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      contentId: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      UserId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-
-        references: {
-          model: 'Users',
-          key: 'id',
+    await queryInterface.createTable(
+      'review',
+      migrationCreateTableWithId('review', {
+        data: {
+          allowNull: false,
+          type: Sequelize.STRING,
         },
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
-    });
+        content_id: {
+          allowNull: false,
+          type: Sequelize.STRING,
+        },
+        user_id: {
+          type: Sequelize.UUID,
+          allowNull: false,
+
+          references: {
+            model: 'user',
+            key: 'user_id',
+          },
+        },
+      })
+    );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable('Reviews');
+    await queryInterface.dropTable('review');
   },
 };

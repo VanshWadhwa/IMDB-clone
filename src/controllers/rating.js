@@ -1,5 +1,5 @@
-const ContentRating = require('../db/models/content_rating');
-const UserRating = require('../db/models/user_rating');
+const UserRating = require('../db/helper/user_rating');
+const ContentRating = require('../db/helper/content_rating');
 
 const ratingController = {
   // create review
@@ -13,48 +13,35 @@ const ratingController = {
       if (!contentId || rating === null)
         return res.status(400).json({ msg: 'Missing field (rating or  contentId)' });
 
-      const userRatingCheck = await UserRating.findOne({
-        where: {
-          contentId: contentId,
-          UserId: user.id,
-        },
-      });
+      const userRatingCheck = await UserRating.findById(contentId, { user_id: user.user_id });
 
       if (userRatingCheck) {
         return res.status(400).json({ msg: 'Rating already submitted for this.' });
       }
 
-      await UserRating.create({ rating, contentId, UserId: user.id });
+      await UserRating.create(rating, contentId, user.user_id);
 
-      const contentRating = await ContentRating.findOne({
-        where: {
-          contentId: contentId,
-        },
-      });
+      // UserRating.create({ rating, contentId, user_id: user.user_id });
+
+      const contentRating = await ContentRating.findByContentId(contentId);
 
       if (contentRating) {
-        const prevNoOfRating = contentRating.noOfRating;
-        const newRating = (contentRating.totalRating + rating) / (prevNoOfRating + 1);
+        const prevNoOfRating = contentRating.no_of_rating;
+        const newRating = (contentRating.total_rating + rating) / (prevNoOfRating + 1);
 
         await contentRating.update({
           rating: newRating,
-          noOfRating: prevNoOfRating + 1,
-          totalRating: contentRating.totalRating + rating,
+          no_of_rating: prevNoOfRating + 1,
+          total_rating: contentRating.total_rating + rating,
         });
       } else {
-        await ContentRating.create({
-          contentId: contentId,
-          rating: rating,
-          noOfRating: 1,
-          totalRating: rating,
-        });
+        await ContentRating.create(contentId, rating, 1, rating);
       }
 
       return res.status(200).json({
         msg: 'Rating done sucessfully',
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ msg: 'Internal Server Error' });
     }
   },

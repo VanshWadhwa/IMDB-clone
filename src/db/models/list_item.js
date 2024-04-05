@@ -1,8 +1,9 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('./../config/sequelize');
-const List = require('./list');
 
-const ListItem = sequelize.define('ListItem', {
+// const List = require('./list');
+const { modelWithId } = require('../schemas');
+
+module.exports = modelWithId('list_item', {
   item: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -14,7 +15,17 @@ const ListItem = sequelize.define('ListItem', {
 });
 
 // ListItem to list many-to-one relationship
-List.hasMany(ListItem);
-ListItem.belongsTo(List);
+// List.hasMany(ListItem);
+// ListItem.belongsTo(List);
 
-module.exports = ListItem;
+module.exports.associate = function associations(models) {
+  const { list_item, list } = models;
+  list.hasMany(list_item, {
+    foreignKey: 'list_id',
+    as: 'list',
+  });
+  list_item.belongsTo(list, {
+    foreignKey: 'list_id',
+    as: 'list',
+  });
+};

@@ -1,13 +1,13 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/sequelize');
-const User = require('./user');
 
-const Review = sequelize.define('Review', {
+const { modelWithId } = require('../schemas');
+
+module.exports = modelWithId('review', {
   data: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  contentId: {
+  content_id: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -15,7 +15,14 @@ const Review = sequelize.define('Review', {
 
 // Many to one relationship one user can have many reviews
 
-User.hasMany(Review);
-Review.belongsTo(User);
-
-module.exports = Review;
+module.exports.associate = function associations(models) {
+  const { user, review } = models;
+  user.hasMany(review, {
+    foreignKey: 'user_id',
+    as: 'user',
+  });
+  review.belongsTo(user, {
+    foreignKey: 'user_id',
+    as: 'user',
+  });
+};

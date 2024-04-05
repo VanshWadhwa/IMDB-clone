@@ -6,10 +6,10 @@ const router = require('express').Router();
 router.get('/all', authMiddleware, listController.showLists);
 router.get('/show/:id', authMiddleware, listController.showList);
 
-router.post('/createList', authMiddleware, listController.createList);
-router.post('/deleteList', authMiddleware, listController.deleteList);
+router.post('/create', authMiddleware, listController.createList);
+router.post('/delete', authMiddleware, listController.deleteList);
 
-router.post('/addToList', authMiddleware, listController.addToList);
-router.post('/removeFromList', authMiddleware, listController.removeFromList);
+router.post('/add-item', authMiddleware, listController.addToList);
+router.post('/remove-item', authMiddleware, listController.removeFromList);
 
 module.exports = router;

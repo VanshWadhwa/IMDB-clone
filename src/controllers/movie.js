@@ -13,21 +13,14 @@ const movieController = {
       const reviews = await Review.findAllById(id);
       const ratings = await ContentRating.findByContentId(id);
 
-      await getTMDBData(`movie/${id}?language=en-US`)
-        .then(function (response) {
-          if (reviews) {
-            response.data['reviews'] = reviews;
-          }
-          if (ratings) {
-            response.data['ratings'] = ratings;
-          }
-          return res.status(200).json({ data: response.data });
-        })
-        .catch(() => {
-          return res.status(500).json({
-            msg: 'Invalid details or Try again later',
-          });
-        });
+      const response = await getTMDBData(`movie/${id}?language=en-US`);
+      if (reviews) {
+        response.data['reviews'] = reviews;
+      }
+      if (ratings) {
+        response.data['ratings'] = ratings;
+      }
+      return res.status(200).json({ data: response.data });
     } catch (error) {
       return res.status(500).json({
         msg: 'Internal Server Error',

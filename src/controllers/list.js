@@ -2,7 +2,7 @@ const List = require('./../db/helper/list');
 const ListItem = require('./../db/helper/list_item');
 
 const listController = {
-  // view list
+  /** This functions sends all the lists created by users */
   showLists: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -11,9 +11,11 @@ const listController = {
 
       return res.status(200).json({ lists: lists });
     } catch (error) {
-      return res.status(500).json({ msg: 'Internal Server Error' });
+      res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
+  /** This functions sends all the items in the list */
+
   showList: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -21,30 +23,31 @@ const listController = {
 
       // checking information valid or not
       if (!listId) {
-        return res.status(400).json({ msg: 'Missing field list id' });
+        throw new Error('Missing field list id');
       }
 
       const list = await List.findById(listId, { user_id: user.user_id });
 
       if (!list) {
-        return res.status(400).json({ msg: "There isn't a list with this id" });
+        throw new Error('There isnt a list with this id');
       }
       const listItems = await ListItem.findAllByListId(listId);
 
       return res.status(200).json({ items: listItems });
     } catch (error) {
-      return res.status(500).json({ msg: 'Internal Server Error' });
+      res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
-  // add to list
+  /** This functions adds a list item to the list */
   addToList: async (req, res) => {
     try {
       const user = res.locals.user;
       const { contentId, contentName, listId } = req.body;
 
       // checking information valid or not
-      if (!contentId || !contentName || !listId)
-        return res.status(400).json({ msg: 'Missing field (listId or contentName or contentId)' });
+      if (!contentId || !contentName || !listId) {
+        throw new Error('Missing field (listId or contentName or contentId)');
+      }
 
       const list = await List.findById(listId);
 
@@ -53,11 +56,11 @@ const listController = {
       });
 
       if (!list || list.user_id !== user.user_id) {
-        return res.status(400).json({ msg: "There isn't a list with this id" });
+        throw new Error('There isnt a list with this id');
       }
       //   check if the item is present on the list or not
       if (listItemCheck && listId === list.id) {
-        return res.status(400).json({ msg: 'This content is already added to your list.' });
+        throw new Error('This content is already added to your list.');
       }
 
       //  add the item to the list
@@ -66,11 +69,11 @@ const listController = {
         .status(200)
         .json({ msg: 'Item successully added to your list.', listItem: listItem });
     } catch (error) {
-      return res.status(500).json({ msg: 'Internal Server Error' });
+      res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
 
-  // create list
+  /** This functions creates a new list */
   createList: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -78,21 +81,19 @@ const listController = {
 
       //   Checking list name
       if (!name) {
-        return res.status(400).json({ msg: 'Please provide a list name' });
+        throw new Error('Please provide a list name');
       }
       const checkList = await List.findByName(name, { user_id: user.user_id });
 
       if (checkList) {
-        return res.status(400).json({ msg: 'You already have a list with this name' });
+        throw new Error('You already have a list with this name');
       }
 
       const list = await List.create(name, user.user_id);
 
-      // await List.create({ name, user_id: user.user_id });
-
       return res.status(200).json({ list: list });
     } catch (error) {
-      return res.status(500).json({ msg: 'Internal Server Error' });
+      res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
 
@@ -104,10 +105,10 @@ const listController = {
       const list = await List.findById(listId);
 
       if (!list) {
-        return res.status(400).json({ msg: 'No such list already exist with this listId' });
+        throw new Error('No such list already exist with this listId');
       }
       if (list.user_id != user.user_id) {
-        return res.status(400).json({ msg: 'Unauthorized operation' });
+        throw new Error('Unauthorized operation');
       }
 
       // deleting list items first
@@ -116,7 +117,7 @@ const listController = {
       await list.destroy();
       res.status(200).json({ msg: 'List deleted sucessfully' });
     } catch (error) {
-      return res.status(500).json({ msg: 'Internal Server Error' });
+      res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
 
@@ -127,28 +128,29 @@ const listController = {
       const { contentId, listId } = req.body;
 
       // validate information
-      if (!contentId || !listId)
-        return res.status(400).json({ msg: 'Missing field (listId or contentId)' });
+      if (!contentId || !listId) {
+        throw new Error('Missing field (listId or contentId)');
+      }
 
       // check if list is present or not
       const list = await List.findById(listId);
 
       if (!list || list.user_id !== user.user_id) {
-        return res.status(400).json({ msg: "There isn't a list with this id for you." });
+        throw new Error('There isnt a list with this id for you.');
       }
 
       //   check if list item is present or not
       const listItem = await ListItem.findByContentId(contentId);
 
       if (!listItem) {
-        return res.status(400).json({ msg: 'This already is already not present on your list' });
+        throw new Error('This already is already not present on your listd');
       }
 
       await listItem.destroy();
 
       return res.status(200).json({ msg: 'Item successully removed to your list.' });
     } catch (error) {
-      return res.status(500).json({ msg: 'Internal Server Error' });
+      res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
 };

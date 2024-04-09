@@ -1,8 +1,19 @@
+/**
+ * Controller for managing lists and list items.
+ * @namespace
+ */
 const List = require('./../db/helper/list');
 const ListItem = require('./../db/helper/list_item');
 
 const listController = {
-  /** This functions sends all the lists created by users */
+  /**
+   * Retrieves all items in a specific list.
+   * @async
+   * @param {Object} req - Express request object.
+   * @param {Object} res - Express response object.
+   * @returns {Object} - Response containing an array of list items.
+   * @throws {Error} - Throws an error if there's an issue with fetching the list items.
+   */
   showLists: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -14,8 +25,14 @@ const listController = {
       res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
-  /** This functions sends all the items in the list */
-
+  /**
+   * Retrieves all items in a specific list.
+   * @async
+   * @param {Object} req - Express request object.
+   * @param {Object} res - Express response object.
+   * @returns {Object} - Response containing an array of list items.
+   * @throws {Error} - Throws an error if there's an issue with fetching the list items.
+   */
   showList: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -38,7 +55,13 @@ const listController = {
       res.status(500).json({ msg: error?.message ?? 'Internal Server Error' });
     }
   },
-  /** This functions adds a list item to the list */
+  /**
+   * Adds a list item to a specific list.
+   * @async
+   * @param {Object} req - Express request object.
+   * @param {Object} res - Express response object.
+   * @throws {Error} - Throws an error if there are missing fields or other issues.
+   */
   addToList: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -73,7 +96,13 @@ const listController = {
     }
   },
 
-  /** This functions creates a new list */
+  /**
+   * Creates a new list
+   * @async
+   * @param {Object} req - Express request object.
+   * @param {Object} res - Express response object.
+   * @throws {Error} - Throws an error if there are missing fields or other issues.
+   */
   createList: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -97,7 +126,13 @@ const listController = {
     }
   },
 
-  // delete list - cascade (this will delete the list and all the listItem of the list)
+  /**
+   * Delete the list.
+   * @async
+   * @param {Object} req - Express request object.
+   * @param {Object} res - Express response object.
+   * @throws {Error} - Throws an error if there are missing fields or other issues.
+   */
   deleteList: async (req, res) => {
     try {
       const user = res.locals.user;
@@ -121,7 +156,13 @@ const listController = {
     }
   },
 
-  // remove from list - with content Id
+  /**
+   * Remove a list item to a specific list.
+   * @async
+   * @param {Object} req - Express request object.
+   * @param {Object} res - Express response object.
+   * @throws {Error} - Throws an error if there are missing fields or other issues.
+   */
   removeFromList: async (req, res) => {
     try {
       const user = res.locals.user;

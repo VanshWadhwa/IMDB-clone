@@ -1,6 +1,6 @@
 const Review = require('./../db/helper/review');
 const ContentRating = require('./../db/helper/content_rating');
-const getTMDBData = require('../utils/tmdb');
+const { getTrendingMovies, getDiscoverMovies, getMovieById } = require('../utils/tmdb');
 
 const movieController = {
   detail: async (req, res) => {
@@ -13,7 +13,7 @@ const movieController = {
       const reviews = await Review.findAllById(id);
       const ratings = await ContentRating.findByContentId(id);
 
-      const response = await getTMDBData(`movie/${id}?language=en-US`);
+      const response = await getMovieById(id);
       if (reviews) {
         response.data['reviews'] = reviews;
       }
@@ -22,6 +22,7 @@ const movieController = {
       }
       return res.status(200).json({ data: response.data });
     } catch (error) {
+      console.log(error);
       return res.status(500).json({
         msg: 'Internal Server Error',
       });
@@ -29,15 +30,8 @@ const movieController = {
   },
   trending: async (req, res) => {
     try {
-      await getTMDBData(`trending/all/day?language=en-U`)
-        .then(function (response) {
-          return res.status(200).json({ data: response.data });
-        })
-        .catch(() => {
-          return res.status(500).json({
-            msg: 'Invalid details or Try again later',
-          });
-        });
+      const response = await getTrendingMovies();
+      return res.status(200).json({ data: response.data });
     } catch (error) {
       return res.status(500).json({
         msg: 'Internal Server Error',
@@ -47,19 +41,9 @@ const movieController = {
   discover: async (req, res) => {
     try {
       const { year, with_genres, page } = req.query;
-      const URL =
-        `discover/movie?language=en-U&` +
-        new URLSearchParams({ year, with_genres, page }).toString();
 
-      await getTMDBData(URL)
-        .then(function (response) {
-          return res.status(200).json({ data: response.data });
-        })
-        .catch(() => {
-          return res.status(500).json({
-            msg: 'Invalid details or Try again later',
-          });
-        });
+      const response = getDiscoverMovies(year, with_genres, page);
+      return res.status(200).json({ data: response.data });
     } catch (error) {
       return res.status(500).json({
         msg: 'Internal Server Error',
